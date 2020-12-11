@@ -361,7 +361,7 @@ class SortingCanvas extends CustomPainter {
   void paint(Canvas canvas, Size size) async {
     var linePaint = Paint()
       ..color = color
-      ..strokeWidth = 1.5
+      ..strokeWidth = 3
       ..isAntiAlias = true;
 
     //IMP the first offset is the bottom point and the second is the top point of the vertical line.
