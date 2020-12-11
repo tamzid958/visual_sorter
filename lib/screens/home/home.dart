@@ -1,9 +1,8 @@
 import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:myapp/constants.dart';
+import 'package:visual_sorter/constants.dart';
 
 var size = 60;
 const time = 200;
@@ -276,7 +275,7 @@ AppBar buildAppBar(BuildContext context) {
 }
 
 class MyStatefulSlider extends StatefulWidget {
-  MyStatefulSlider({Key key}) : super(key: key);
+  MyStatefulSlider({key}) : super(key: key);
 
   @override
   _MyStatefulSliderState createState() => _MyStatefulSliderState();
@@ -325,7 +324,7 @@ List<int> _getRandomIntegerList(size) {
   List<int> arr = [];
   Random rng = new Random();
   for (int i = 0; i < size; i++) {
-    arr.add(rng.nextInt(15) + 2);
+    arr.add(rng.nextInt(11) + 2);
   }
   return arr;
 }
@@ -368,8 +367,8 @@ class SortingCanvas extends CustomPainter {
     //It is offset from the top left corner of the canvas
 
     for (int i = 1; i <= arr.length; i++) {
-      canvas.drawLine(Offset(30.0 + (5 * i), size.height - 30),
-          Offset(30.0 + (5 * i), 30.0 * arr[i - 1]), linePaint);
+      canvas.drawLine(Offset(40.0 + (10 * i), size.height - 40),
+          Offset(40.0 + (10 * i), 40.0 * arr[i - 1]), linePaint);
     }
   }
 

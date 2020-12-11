@@ -1,6 +1,6 @@
 # Visual Sorter
 
-which is developed by Tamzid. Insipred by clementmihailescu.
+which is developed by Tamzid. Inspired by clementmihailescu.
 
 ## Getting Started
 

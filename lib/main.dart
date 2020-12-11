@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:myapp/screens/home/home.dart';
+import 'package:visual_sorter/screens/home/home.dart';
 import 'constants.dart';
 
 void main() {
