@@ -17,4 +17,4 @@ double offsetSmall = 10; // app> 5 //web=>10
 double offsetBig = 40; // app> 20 //web=> 50
 double initSrokeWidth = 5; // app> 3 //web=> 5
 int ranLength = 9; //
-const time = 100;
+const time = 70;

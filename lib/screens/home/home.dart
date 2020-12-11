@@ -3,15 +3,16 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:visual_sorter/constants.dart';
+import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 var size = initArraySize;
-
 List<int> arr = _getRandomIntegerList(size);
 Color color = kOrangeColor;
 bool isAlgorithmRunning = false;
 int _selectedIndex = 0;
 int index = 0;
 double hieghtUni, widthUni;
+String timeC = "00.00.00.00";
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -196,6 +197,12 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     }
 
+    final _stopWatchTimer = StopWatchTimer(
+      onChange: (value) {
+        final displayTime = StopWatchTimer.getDisplayTime(value);
+        timeC = displayTime;
+      },
+    );
     return Scaffold(
       appBar: buildAppBar(context),
       body: Body(),
@@ -224,21 +231,22 @@ class _HomeScreenState extends State<HomeScreen> {
         unselectedItemColor: kBlackColor,
         onTap: isAlgorithmRunning == true ? null : onItemTapped,
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FloatingActionButton(
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: FloatingActionButton.extended(
           backgroundColor:
               isAlgorithmRunning == true ? kRedColor : kTextLightColor,
           hoverColor: kOrangeColor,
           splashColor: kRedColor,
-          // label: Text('Start'),
-          //icon:
-          child: Icon(
+          label: Text("Timer: " + timeC),
+          icon: Icon(
             isAlgorithmRunning == true ? Icons.stop : Icons.play_arrow_rounded,
           ),
           onPressed: isAlgorithmRunning == true
               ? null
               : () async {
+                  _stopWatchTimer.onExecute.add(StopWatchExecute.reset);
                   _setAlgorithmRunningState(true);
+                  _stopWatchTimer.onExecute.add(StopWatchExecute.start);
                   if (_selectedIndex == 0) {
                     await _mergeSortVisualiser(arr, 0, arr.length - 1);
                   } else if (_selectedIndex == 1) {
@@ -249,6 +257,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     await _bubbleSortVisualiser(arr);
                   }
                   _setAlgorithmRunningState(false);
+                  _stopWatchTimer.onExecute.add(StopWatchExecute.stop);
                 }),
     );
   }
