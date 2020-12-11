@@ -233,7 +233,7 @@ class _HomeScreenState extends State<HomeScreen> {
           // label: Text('Start'),
           //icon:
           child: Icon(
-            Icons.play_arrow_rounded,
+            isAlgorithmRunning == true ? Icons.stop : Icons.play_arrow_rounded,
           ),
           onPressed: isAlgorithmRunning == true
               ? null
@@ -358,6 +358,8 @@ List<int> _getRandomIntegerList(size) {
 
   if (widthUni.toInt() <= 400) {
     size = 33;
+  } else {
+    size = widthUni.toInt() / 7;
   }
   for (int i = 0; i < size; i++) {
     arr.add(rng.nextInt(ranLength) + 2);
