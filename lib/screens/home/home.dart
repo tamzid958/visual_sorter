@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:visual_sorter/constants.dart';
 
-var size = 60;
+var size = 20;
 const time = 200;
 List<int> arr = _getRandomIntegerList(size);
 Color color = kOrangeColor;
@@ -224,15 +224,17 @@ class _HomeScreenState extends State<HomeScreen> {
         onTap: _onItemTapped,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: FloatingActionButton(
           backgroundColor: kTextLightColor,
           hoverColor: kOrangeColor,
           splashColor: kRedColor,
-          label: Text('Start'),
-          icon: Icon(
+          // label: Text('Start'),
+          //icon:
+          child: Icon(
             Icons.play_arrow_rounded,
           ),
           onPressed: () {
+            isAlgorithmRunning = true;
             if (_selectedIndex == 0) {
               _mergeSortVisualiser(arr, 0, arr.length - 1);
             } else if (_selectedIndex == 1) {
@@ -242,6 +244,7 @@ class _HomeScreenState extends State<HomeScreen> {
             } else if (_selectedIndex == 3) {
               _bubbleSortVisualiser();
             }
+            isAlgorithmRunning = false;
           }),
     );
   }
@@ -263,7 +266,10 @@ AppBar buildAppBar(BuildContext context) {
             "Change Array Size",
             style: TextStyle(fontSize: 15, color: kTextLightColor),
           )),
-      MyStatefulSlider(),
+      Container(
+        width: 150,
+        child: MyStatefulSlider(),
+      ),
       IconButton(
         icon: Icon(Icons.verified_user),
         color: kWhiteColor,
@@ -288,24 +294,33 @@ class _MyStatefulSliderState extends State<MyStatefulSlider> {
   @override
   Widget build(BuildContext context) {
     return Slider(
-      value: _currentSliderValue,
-      min: 10,
-      max: 120,
-      divisions: 10,
-      activeColor: kWhiteColor,
-      inactiveColor: kAshColor,
-      onChanged: (double value) {
-        setState(
-          () {
-            if (isAlgorithmRunning == false) {
-              _currentSliderValue = value;
-              arr = _getRandomIntegerList(_currentSliderValue as int);
-            }
-          },
-        );
-      },
-      onChangeEnd: _reset,
-    );
+        value: _currentSliderValue,
+        min: 10,
+        max: 50,
+        divisions: 10,
+        activeColor: kWhiteColor,
+        inactiveColor: kAshColor,
+        onChanged: (double value) {
+          setState(
+            () {
+              if (isAlgorithmRunning == false) {
+                _currentSliderValue = value;
+                arr = _getRandomIntegerList(_currentSliderValue);
+              }
+            },
+          );
+        },
+        onChangeStart: (double value) {
+          if (isAlgorithmRunning == false) {
+            _currentSliderValue = value;
+          }
+        },
+        onChangeEnd: (double value) {
+          if (isAlgorithmRunning == false) {
+            _currentSliderValue = value;
+            _reset(value);
+          }
+        });
   }
 
   void _reset(double value) async {
@@ -367,8 +382,8 @@ class SortingCanvas extends CustomPainter {
     //It is offset from the top left corner of the canvas
 
     for (int i = 1; i <= arr.length; i++) {
-      canvas.drawLine(Offset(40.0 + (10 * i), size.height - 40),
-          Offset(40.0 + (10 * i), 40.0 * arr[i - 1]), linePaint);
+      canvas.drawLine(Offset(20.0 + (5 * i), size.height - 20),
+          Offset(20.0 + (5 * i), 20.0 * arr[i - 1]), linePaint);
     }
   }
 

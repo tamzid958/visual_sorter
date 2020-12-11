@@ -18,6 +18,7 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+
       title: 'Visual Sorter',
       theme: ThemeData(
         textTheme: Theme.of(context)
