@@ -11,3 +11,8 @@ const kAshColor = Color(0xFFB2BEB5);
 const kVioletColor = Color(0xFF4DA70D6);
 const KdefaultPaddin = 20.0;
 const KmodiPaddin = 10.0;
+double initArraySize = 70; //app =>20 //web=>70
+double maxArraySize = 150; //app => 50 //web=>150
+double offsetSmall = 10; // app> 5 //web=>10
+double offsetBig = 50; // app> 20 //web=> 50
+double initSrokeWidth = 5; // app> 3 //web=> 5

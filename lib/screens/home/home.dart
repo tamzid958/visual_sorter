@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:visual_sorter/constants.dart';
 
-var size = 20;
+var size = initArraySize;
 const time = 200;
 List<int> arr = _getRandomIntegerList(size);
 Color color = kOrangeColor;
@@ -296,7 +296,7 @@ class _MyStatefulSliderState extends State<MyStatefulSlider> {
     return Slider(
         value: _currentSliderValue,
         min: 10,
-        max: 50,
+        max: maxArraySize,
         divisions: 10,
         activeColor: kWhiteColor,
         inactiveColor: kAshColor,
@@ -375,15 +375,17 @@ class SortingCanvas extends CustomPainter {
   void paint(Canvas canvas, Size size) async {
     var linePaint = Paint()
       ..color = color
-      ..strokeWidth = 3
+      ..strokeWidth = initSrokeWidth
       ..isAntiAlias = true;
 
     //IMP the first offset is the bottom point and the second is the top point of the vertical line.
     //It is offset from the top left corner of the canvas
 
     for (int i = 1; i <= arr.length; i++) {
-      canvas.drawLine(Offset(20.0 + (5 * i), size.height - 20),
-          Offset(20.0 + (5 * i), 20.0 * arr[i - 1]), linePaint);
+      canvas.drawLine(
+          Offset(offsetBig + (offsetSmall * i), size.height - 20),
+          Offset(offsetBig + (offsetSmall * i), offsetBig * arr[i - 1]),
+          linePaint);
     }
   }
 
