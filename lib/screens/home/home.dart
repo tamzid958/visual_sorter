@@ -5,10 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:visual_sorter/constants.dart';
 
 var size = initArraySize;
-const time = 200;
+
 List<int> arr = _getRandomIntegerList(size);
 Color color = kOrangeColor;
 bool isAlgorithmRunning = false;
+int _selectedIndex = 0;
+int index = 0;
+double hieghtUni, widthUni;
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -16,13 +19,11 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;
-
-  void _onItemTapped(int index) {
+  void onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
-      arr = _getRandomIntegerList(size);
       isAlgorithmRunning = false;
+      arr = _getRandomIntegerList(size);
     });
   }
 
@@ -40,7 +41,13 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     }
 
-    void _bubbleSortVisualiser() async {
+    void _setAlgorithmRunningState(bool state) {
+      setState(() {
+        isAlgorithmRunning = state;
+      });
+    }
+
+    _bubbleSortVisualiser(arr) async {
       List<int> bubbleArr = List.from(arr);
       for (int i = 0; i < bubbleArr.length - 1; i++) {
         for (int j = 0; j < bubbleArr.length - 1 - i; j++) {
@@ -50,14 +57,8 @@ class _HomeScreenState extends State<HomeScreen> {
             bubbleArr[j] = bubbleArr[j + 1];
             bubbleArr[j + 1] = temp;
             //Every time arr changes setState() is called to visualise the changing array.
-            color = kGreenColor;
-            await Future.delayed(const Duration(milliseconds: time), () {
-              setState(() {
-                arr = List.from(bubbleArr);
-                color = kRedColor;
-                color = kVioletColor;
-              });
-            });
+
+            await _updateArrayWithDelay(bubbleArr);
           }
         }
       }
@@ -221,11 +222,12 @@ class _HomeScreenState extends State<HomeScreen> {
         currentIndex: _selectedIndex,
         selectedItemColor: kOrangeColor,
         unselectedItemColor: kBlackColor,
-        onTap: _onItemTapped,
+        onTap: isAlgorithmRunning == true ? null : onItemTapped,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
-          backgroundColor: kTextLightColor,
+          backgroundColor:
+              isAlgorithmRunning == true ? kRedColor : kTextLightColor,
           hoverColor: kOrangeColor,
           splashColor: kRedColor,
           // label: Text('Start'),
@@ -233,42 +235,43 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Icon(
             Icons.play_arrow_rounded,
           ),
-          onPressed: () {
-            isAlgorithmRunning = true;
-            if (_selectedIndex == 0) {
-              _mergeSortVisualiser(arr, 0, arr.length - 1);
-            } else if (_selectedIndex == 1) {
-              _quickSortVisualiser(arr, 0, arr.length - 1);
-            } else if (_selectedIndex == 2) {
-              _heapSortVisualiser(arr);
-            } else if (_selectedIndex == 3) {
-              _bubbleSortVisualiser();
-            }
-            isAlgorithmRunning = false;
-          }),
+          onPressed: isAlgorithmRunning == true
+              ? null
+              : () async {
+                  _setAlgorithmRunningState(true);
+                  if (_selectedIndex == 0) {
+                    await _mergeSortVisualiser(arr, 0, arr.length - 1);
+                  } else if (_selectedIndex == 1) {
+                    await _quickSortVisualiser(arr, 0, arr.length - 1);
+                  } else if (_selectedIndex == 2) {
+                    await _heapSortVisualiser(arr);
+                  } else if (_selectedIndex == 3) {
+                    await _bubbleSortVisualiser(arr);
+                  }
+                  _setAlgorithmRunningState(false);
+                }),
     );
   }
 }
 
 AppBar buildAppBar(BuildContext context) {
+  widthUni = MediaQuery.of(context).size.width / 2;
+  hieghtUni = MediaQuery.of(context).size.height / 2;
   return AppBar(
     backgroundColor: kOrangeColor,
     elevation: 0,
     title: Text(
       "Visual Sorter",
       style: TextStyle(
-          fontSize: 30, fontWeight: FontWeight.bold, color: kTextLightColor),
+          fontSize: 20, fontWeight: FontWeight.bold, color: kTextLightColor),
     ),
     actions: <Widget>[
-      Padding(
-          padding: const EdgeInsets.only(top: 18.0),
-          child: Text(
-            "Change Array Size",
-            style: TextStyle(fontSize: 15, color: kTextLightColor),
-          )),
-      Container(
-        width: 150,
-        child: MyStatefulSlider(),
+      AbsorbPointer(
+        absorbing: isAlgorithmRunning,
+        child: Container(
+          width: 200,
+          child: MyStatefulSlider(),
+        ),
       ),
       IconButton(
         icon: Icon(Icons.verified_user),
@@ -282,18 +285,31 @@ AppBar buildAppBar(BuildContext context) {
 
 class MyStatefulSlider extends StatefulWidget {
   MyStatefulSlider({key}) : super(key: key);
-
   @override
   _MyStatefulSliderState createState() => _MyStatefulSliderState();
 }
 
 /// This is the private State class that goes with MyStatefulWidget.
 class _MyStatefulSliderState extends State<MyStatefulSlider> {
+  // ignore: unused_field
   double _currentSliderValue = 50;
 
   @override
   Widget build(BuildContext context) {
-    return Slider(
+    return RaisedButton.icon(
+      icon: Icon(Icons.settings_backup_restore_sharp, color: kTextLightColor),
+      label: Text("Random Array", style: TextStyle(color: kTextLightColor)),
+      color: kOrangeColor,
+      onPressed: isAlgorithmRunning == true
+          ? null
+          : () {
+              _reset();
+              arr = _getRandomIntegerList(initArraySize);
+            },
+    );
+  }
+
+  /*Slider(
         value: _currentSliderValue,
         min: 10,
         max: maxArraySize,
@@ -321,9 +337,10 @@ class _MyStatefulSliderState extends State<MyStatefulSlider> {
             _reset(value);
           }
         });
-  }
 
-  void _reset(double value) async {
+  }*/
+
+  void _reset() {
     Navigator.pushReplacement(
       context,
       PageRouteBuilder(
@@ -338,8 +355,12 @@ class _MyStatefulSliderState extends State<MyStatefulSlider> {
 List<int> _getRandomIntegerList(size) {
   List<int> arr = [];
   Random rng = new Random();
+
+  if (widthUni.toInt() <= 400) {
+    size = 33;
+  }
   for (int i = 0; i < size; i++) {
-    arr.add(rng.nextInt(11) + 2);
+    arr.add(rng.nextInt(ranLength) + 2);
   }
   return arr;
 }
@@ -353,14 +374,13 @@ class _BodyState extends State<Body> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: LayoutBuilder(
-        builder: (context, constraints) => Container(
-          child: CustomPaint(
-            willChange: true,
-            isComplex: true,
-            size: Size(window.physicalSize.width, double.negativeInfinity),
-            painter: SortingCanvas(arr),
-          ),
+      child: Align(
+        alignment: Alignment.topCenter,
+        child: CustomPaint(
+          willChange: true,
+          isComplex: true,
+          size: Size(window.physicalSize.width, double.negativeInfinity),
+          painter: SortingCanvas(arr),
         ),
       ),
     );
