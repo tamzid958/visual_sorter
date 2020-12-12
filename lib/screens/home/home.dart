@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:visual_sorter/constants.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
+import 'package:visual_sorter/screens/privacy_policy/privacy_policy.dart';
 
 var size = initArraySize;
 List<int> arr = _getRandomIntegerList(size);
@@ -283,10 +284,21 @@ AppBar buildAppBar(BuildContext context) {
         ),
       ),
       IconButton(
-        icon: Icon(Icons.verified_user),
+        icon: Icon(Icons.done_all),
         color: kWhiteColor,
         tooltip: "Developed by Tamzid. Insipred by clementmihailescu.",
         onPressed: () {},
+      ),
+      IconButton(
+        icon: Icon(Icons.privacy_tip_rounded),
+        color: kWhiteColor,
+        tooltip: "Privacy Policy",
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => PrivacyPolicy()),
+          );
+        },
       ),
     ],
   );
@@ -300,9 +312,6 @@ class MyStatefulSlider extends StatefulWidget {
 
 /// This is the private State class that goes with MyStatefulWidget.
 class _MyStatefulSliderState extends State<MyStatefulSlider> {
-  // ignore: unused_field
-  double _currentSliderValue = 50;
-
   @override
   Widget build(BuildContext context) {
     return RaisedButton.icon(
@@ -317,37 +326,6 @@ class _MyStatefulSliderState extends State<MyStatefulSlider> {
             },
     );
   }
-
-  /*Slider(
-        value: _currentSliderValue,
-        min: 10,
-        max: maxArraySize,
-        divisions: 10,
-        activeColor: kWhiteColor,
-        inactiveColor: kAshColor,
-        onChanged: (double value) {
-          setState(
-            () {
-              if (isAlgorithmRunning == false) {
-                _currentSliderValue = value;
-                arr = _getRandomIntegerList(_currentSliderValue);
-              }
-            },
-          );
-        },
-        onChangeStart: (double value) {
-          if (isAlgorithmRunning == false) {
-            _currentSliderValue = value;
-          }
-        },
-        onChangeEnd: (double value) {
-          if (isAlgorithmRunning == false) {
-            _currentSliderValue = value;
-            _reset(value);
-          }
-        });
-
-  }*/
 
   void _reset() {
     Navigator.pushReplacement(
