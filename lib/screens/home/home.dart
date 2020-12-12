@@ -284,12 +284,6 @@ AppBar buildAppBar(BuildContext context) {
         ),
       ),
       IconButton(
-        icon: Icon(Icons.done_all),
-        color: kWhiteColor,
-        tooltip: "Developed by Tamzid. Insipred by clementmihailescu.",
-        onPressed: () {},
-      ),
-      IconButton(
         icon: Icon(Icons.privacy_tip_rounded),
         color: kWhiteColor,
         tooltip: "Privacy Policy",
@@ -343,11 +337,8 @@ List<int> _getRandomIntegerList(size) {
   List<int> arr = [];
   Random rng = new Random();
 
-  if (widthUni.toInt() <= 400) {
-    size = 33;
-  } else {
-    size = widthUni.toInt() / 7;
-  }
+  size = widthUni.toInt() / 7;
+
   for (int i = 0; i < size; i++) {
     arr.add(rng.nextInt(ranLength) + 2);
   }
