@@ -380,7 +380,7 @@ class _MyStatefulSliderState extends State<MyStatefulSlider> {
   Widget build(BuildContext context) {
     return RaisedButton.icon(
       icon: Icon(Icons.settings_backup_restore_sharp, color: kTextLightColor),
-      label: Text(arrays, style: TextStyle(color: kTextLightColor)),
+      label: Text("Random", style: TextStyle(color: kTextLightColor)),
       color: kOrangeColor,
       onPressed: isAlgorithmRunning == true
           ? null
@@ -408,7 +408,6 @@ List<int> _getRandomIntegerList(size) {
   Random rng = new Random();
 
   size = widthUni.toInt() / 7;
-
   for (int i = 0; i < size; i++) {
     arr.add(rng.nextInt(ranLength) + 2);
   }
