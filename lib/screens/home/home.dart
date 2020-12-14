@@ -15,6 +15,7 @@ int _selectedIndex = 0;
 int index = 0;
 double hieghtUni, widthUni;
 String timeC = "00.00.00.00";
+var arrays = "";
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -22,6 +23,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  var _scaffoldKey = new GlobalKey<ScaffoldState>();
   void onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -209,10 +211,14 @@ class _HomeScreenState extends State<HomeScreen> {
       length: 2,
       initialIndex: 0,
       child: Scaffold(
+        key: _scaffoldKey,
         appBar: buildAppBar(context),
         body: Container(
           child: TabBarView(
-            children: containers,
+            children: [
+              new VisualSorting(scaffoldKey: _scaffoldKey),
+              new ArrayVS(scaffoldKey: _scaffoldKey),
+            ],
           ),
         ), // Body()
         bottomNavigationBar: BottomNavigationBar(
@@ -275,10 +281,33 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-List<Widget> containers = [
-  Container(
-    height: double.maxFinite,
-    child: Align(
+class ArrayVS extends StatefulWidget {
+  final GlobalKey<ScaffoldState> scaffoldKey;
+  const ArrayVS({Key key, this.scaffoldKey}) : super(key: key);
+
+  @override
+  _ArrayVSState createState() => _ArrayVSState();
+}
+
+class _ArrayVSState extends State<ArrayVS> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(child: Text("Random"));
+  }
+}
+
+class VisualSorting extends StatefulWidget {
+  final GlobalKey<ScaffoldState> scaffoldKey;
+  const VisualSorting({Key key, this.scaffoldKey}) : super(key: key);
+
+  @override
+  _VisualSortingState createState() => _VisualSortingState();
+}
+
+class _VisualSortingState extends State<VisualSorting> {
+  @override
+  Widget build(BuildContext context) {
+    return Align(
       alignment: Alignment.topCenter,
       child: CustomPaint(
         willChange: true,
@@ -286,10 +315,9 @@ List<Widget> containers = [
         size: Size(window.physicalSize.width, double.negativeInfinity),
         painter: SortingCanvas(arr),
       ),
-    ),
-  ),
-  Container(child: Text("Random"))
-];
+    );
+  }
+}
 
 AppBar buildAppBar(BuildContext context) {
   widthUni = MediaQuery.of(context).size.width / 2;
@@ -303,18 +331,18 @@ AppBar buildAppBar(BuildContext context) {
           fontSize: 20, fontWeight: FontWeight.bold, color: kTextLightColor),
     ),
     bottom: TabBar(
-      // controller: _selectedController,
+      labelColor: kTextLightColor,
       tabs: <Widget>[
         Tab(
             icon: Icon(
-          Icons.leaderboard,
-          color: kTextLightColor,
-        )),
+              Icons.leaderboard,
+            ),
+            text: "Visual"),
         Tab(
             icon: Icon(
-          Icons.money,
-          color: kTextLightColor,
-        )),
+              Icons.money,
+            ),
+            text: "Array"),
       ],
     ),
     actions: <Widget>[
@@ -352,7 +380,7 @@ class _MyStatefulSliderState extends State<MyStatefulSlider> {
   Widget build(BuildContext context) {
     return RaisedButton.icon(
       icon: Icon(Icons.settings_backup_restore_sharp, color: kTextLightColor),
-      label: Text("Random Array", style: TextStyle(color: kTextLightColor)),
+      label: Text(arrays, style: TextStyle(color: kTextLightColor)),
       color: kOrangeColor,
       onPressed: isAlgorithmRunning == true
           ? null
