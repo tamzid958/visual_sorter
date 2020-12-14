@@ -327,8 +327,7 @@ AppBar buildAppBar(BuildContext context) {
     elevation: 0,
     title: Text(
       "Visual Sorter",
-      style: TextStyle(
-          fontSize: 20, fontWeight: FontWeight.bold, color: kTextLightColor),
+      style: TextStyle(fontWeight: FontWeight.bold, color: kTextLightColor),
     ),
     bottom: TabBar(
       labelColor: kTextLightColor,
