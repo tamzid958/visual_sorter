@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:visual_sorter/constants.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
@@ -204,65 +205,91 @@ class _HomeScreenState extends State<HomeScreen> {
         timeC = displayTime;
       },
     );
-    return Scaffold(
-      appBar: buildAppBar(context),
-      body: Body(),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.merge_type_outlined),
-            label: 'Merge Sort',
+    return DefaultTabController(
+      length: 2,
+      initialIndex: 0,
+      child: Scaffold(
+        appBar: buildAppBar(context),
+        body: Container(
+          child: TabBarView(
+            children: containers,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.fast_forward),
-            label: 'Quick Sort',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.arrow_upward),
-            label: 'Heap Sort',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bubble_chart),
-            label: 'Bubble Sort',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: kOrangeColor,
-        unselectedItemColor: kBlackColor,
-        onTap: isAlgorithmRunning == true ? null : onItemTapped,
+        ), // Body()
+        bottomNavigationBar: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.merge_type_outlined),
+              label: 'Merge Sort',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.fast_forward),
+              label: 'Quick Sort',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.arrow_upward),
+              label: 'Heap Sort',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.bubble_chart),
+              label: 'Bubble Sort',
+            ),
+          ],
+          currentIndex: _selectedIndex,
+          selectedItemColor: kOrangeColor,
+          unselectedItemColor: kBlackColor,
+          onTap: isAlgorithmRunning == true ? null : onItemTapped,
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: FloatingActionButton.extended(
+            backgroundColor:
+                isAlgorithmRunning == true ? kRedColor : kTextLightColor,
+            hoverColor: kOrangeColor,
+            splashColor: kRedColor,
+            label: Text("Timer: " + timeC),
+            icon: Icon(
+              isAlgorithmRunning == true
+                  ? Icons.stop
+                  : Icons.play_arrow_rounded,
+            ),
+            onPressed: isAlgorithmRunning == true
+                ? null
+                : () async {
+                    _stopWatchTimer.onExecute.add(StopWatchExecute.reset);
+                    _setAlgorithmRunningState(true);
+                    _stopWatchTimer.onExecute.add(StopWatchExecute.start);
+                    if (_selectedIndex == 0) {
+                      await _mergeSortVisualiser(arr, 0, arr.length - 1);
+                    } else if (_selectedIndex == 1) {
+                      await _quickSortVisualiser(arr, 0, arr.length - 1);
+                    } else if (_selectedIndex == 2) {
+                      await _heapSortVisualiser(arr);
+                    } else if (_selectedIndex == 3) {
+                      await _bubbleSortVisualiser(arr);
+                    }
+                    _setAlgorithmRunningState(false);
+                    _stopWatchTimer.onExecute.add(StopWatchExecute.stop);
+                  }),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: FloatingActionButton.extended(
-          backgroundColor:
-              isAlgorithmRunning == true ? kRedColor : kTextLightColor,
-          hoverColor: kOrangeColor,
-          splashColor: kRedColor,
-          label: Text("Timer: " + timeC),
-          icon: Icon(
-            isAlgorithmRunning == true ? Icons.stop : Icons.play_arrow_rounded,
-          ),
-          onPressed: isAlgorithmRunning == true
-              ? null
-              : () async {
-                  _stopWatchTimer.onExecute.add(StopWatchExecute.reset);
-                  _setAlgorithmRunningState(true);
-                  _stopWatchTimer.onExecute.add(StopWatchExecute.start);
-                  if (_selectedIndex == 0) {
-                    await _mergeSortVisualiser(arr, 0, arr.length - 1);
-                  } else if (_selectedIndex == 1) {
-                    await _quickSortVisualiser(arr, 0, arr.length - 1);
-                  } else if (_selectedIndex == 2) {
-                    await _heapSortVisualiser(arr);
-                  } else if (_selectedIndex == 3) {
-                    await _bubbleSortVisualiser(arr);
-                  }
-                  _setAlgorithmRunningState(false);
-                  _stopWatchTimer.onExecute.add(StopWatchExecute.stop);
-                }),
     );
   }
 }
+
+List<Widget> containers = [
+  Container(
+    height: double.maxFinite,
+    child: Align(
+      alignment: Alignment.topCenter,
+      child: CustomPaint(
+        willChange: true,
+        isComplex: true,
+        size: Size(window.physicalSize.width, double.negativeInfinity),
+        painter: SortingCanvas(arr),
+      ),
+    ),
+  ),
+  Container(child: Text("Random"))
+];
 
 AppBar buildAppBar(BuildContext context) {
   widthUni = MediaQuery.of(context).size.width / 2;
@@ -274,6 +301,21 @@ AppBar buildAppBar(BuildContext context) {
       "Visual Sorter",
       style: TextStyle(
           fontSize: 20, fontWeight: FontWeight.bold, color: kTextLightColor),
+    ),
+    bottom: TabBar(
+      // controller: _selectedController,
+      tabs: <Widget>[
+        Tab(
+            icon: Icon(
+          Icons.leaderboard,
+          color: kTextLightColor,
+        )),
+        Tab(
+            icon: Icon(
+          Icons.money,
+          color: kTextLightColor,
+        )),
+      ],
     ),
     actions: <Widget>[
       AbsorbPointer(
@@ -345,28 +387,6 @@ List<int> _getRandomIntegerList(size) {
   return arr;
 }
 
-class Body extends StatefulWidget {
-  @override
-  _BodyState createState() => _BodyState();
-}
-
-class _BodyState extends State<Body> {
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Align(
-        alignment: Alignment.topCenter,
-        child: CustomPaint(
-          willChange: true,
-          isComplex: true,
-          size: Size(window.physicalSize.width, double.negativeInfinity),
-          painter: SortingCanvas(arr),
-        ),
-      ),
-    );
-  }
-}
-
 class SortingCanvas extends CustomPainter {
   List<int> arr;
   SortingCanvas(this.arr);
@@ -390,8 +410,8 @@ class SortingCanvas extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(SortingCanvas oldDelegate) => true;
-  // !listEquals(this.arr, oldDelegate.arr);
+  bool shouldRepaint(SortingCanvas oldDelegate) =>
+      !listEquals(this.arr, oldDelegate.arr);
 }
 
 void rebuildAllChildren(BuildContext context) {
