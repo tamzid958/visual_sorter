@@ -1,19 +1,25 @@
+import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:visual_sorter/constants.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:visual_sorter/screens/privacy_policy/privacy_policy.dart';
+import 'package:random_color/random_color.dart';
+import 'package:rate_my_app/rate_my_app.dart';
 
+RandomColor _randomColor = RandomColor();
 var size = initArraySize;
 List<int> arr = _getRandomIntegerList(size);
-Color color = kOrangeColor;
 bool isAlgorithmRunning = false;
 int _selectedIndex = 0;
 int index = 0;
 double hieghtUni, widthUni;
 String timeC = "00.00.00.00";
+var arrays = "";
+List<int> displayArr = arr;
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -21,6 +27,54 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  RateMyApp _rateMyApp = RateMyApp(
+    preferencesPrefix: 'rateMyApp_',
+    minDays: 1,
+    minLaunches: 2,
+    remindDays: 2,
+    remindLaunches: 5,
+    googlePlayIdentifier: 'com.xilo.visualsorter',
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    _rateMyApp.init().then((_) {
+      if (_rateMyApp.shouldOpenDialog) {
+        _rateMyApp.showRateDialog(
+          context,
+          title: 'Rate this app', // The dialog title.
+          message:
+              'If you like this app, please take a little bit of your time to review it !\nIt really helps us and it shouldn\'t take you more than one minute.', // The dialog message.
+          rateButton: '👍 RATE', // The dialog "rate" button text.
+          noButton: '🚫 NO THANKS', // The dialog "no" button text.
+          laterButton: '🖐️ MAYBE LATER', // The dialog "later" button text.
+          listener: (button) {
+            // The button click listener (useful if you want to cancel the click event).
+            switch (button) {
+              case RateMyAppDialogButton.rate:
+                break;
+              case RateMyAppDialogButton.later:
+                break;
+              case RateMyAppDialogButton.no:
+                break;
+            }
+
+            return true; // Return false if you want to cancel the click event.
+          },
+          ignoreNativeDialog: Platform
+              .isAndroid, // Set to false if you want to show the Apple's native app rating dialog on iOS or Google's native app rating dialog (depends on the current Platform).
+          dialogStyle: DialogStyle(), // Custom dialog styles.
+          onDismissed: () => _rateMyApp.callEvent(RateMyAppEventType
+              .laterButtonPressed), // Called when the user dismissed the dialog (either by taping outside or by pressing the "back" button).
+          // contentBuilder: (context, defaultContent) => content, // This one allows you to change the default dialog content.
+          // actionsBuilder: (context) => [], // This one allows you to use your own buttons.
+        );
+      }
+    });
+  }
+
+  var _scaffoldKey = new GlobalKey<ScaffoldState>();
   void onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -33,12 +87,10 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
 //async update method to keep the body of recursive algorithms cleaner.
     _updateArrayWithDelay(List<int> updatedArr) async {
-      color = kGreenColor;
       await Future.delayed(const Duration(milliseconds: time), () {
         setState(() {
+          displayArr = updatedArr;
           arr = List.from(updatedArr);
-          color = kRedColor;
-          color = kVioletColor;
         });
       });
     }
@@ -198,68 +250,277 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     }
 
+    //function to sort the list using SELECTION SORT and repaint the canvas at every iteration.
+    _selectionSortVisualiser(arr) async {
+      List<int> selectArr = List.from(arr);
+      int minIndex, temp;
+
+      for (int i = 0; i < selectArr.length - 1; i++) {
+        minIndex = i;
+        for (int j = i + 1; j < selectArr.length; j++) {
+          if (selectArr[j] < selectArr[minIndex]) {
+            minIndex = j;
+          }
+        }
+
+        temp = selectArr[i];
+        selectArr[i] = selectArr[minIndex];
+        selectArr[minIndex] = temp;
+
+        await _updateArrayWithDelay(selectArr);
+      }
+    }
+
+    //function to sort the list using INSERTION SORT and repaint the canvas at every iteration.
+    _insertionSortVisualiser(arr) async {
+      List<int> insertArr = List.from(arr);
+      int key, j;
+
+      for (int i = 1; i < insertArr.length; i++) {
+        key = insertArr[i];
+        j = i - 1;
+
+        while (j >= 0 && insertArr[j] > key) {
+          insertArr[j + 1] = insertArr[j];
+          j = j - 1;
+        }
+        insertArr[j + 1] = key;
+        await _updateArrayWithDelay(insertArr);
+      }
+    }
+
+    ////function to sort the list using GNOME SORT and repaint the canvas at every iteration.
+    _gnomeSortVisualiser(arr) async {
+      List<int> gnomeArr = List.from(arr);
+      int index = 0;
+
+      while (index < gnomeArr.length) {
+        if (index == 0) index++;
+        if (gnomeArr[index] >= gnomeArr[index - 1])
+          index++;
+        else {
+          int temp;
+          temp = gnomeArr[index];
+          gnomeArr[index] = gnomeArr[index - 1];
+          gnomeArr[index - 1] = temp;
+          await _updateArrayWithDelay(gnomeArr);
+          index--;
+        }
+      }
+    }
+
     final _stopWatchTimer = StopWatchTimer(
       onChange: (value) {
         final displayTime = StopWatchTimer.getDisplayTime(value);
         timeC = displayTime;
       },
     );
-    return Scaffold(
-      appBar: buildAppBar(context),
-      body: Body(),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.merge_type_outlined),
-            label: 'Merge Sort',
+
+    return DefaultTabController(
+      length: 3,
+      initialIndex: 0,
+      child: Scaffold(
+        key: _scaffoldKey,
+        appBar: buildAppBar(context),
+        body: Container(
+          child: TabBarView(
+            children: [
+              new VisualSorting(scaffoldKey: _scaffoldKey),
+              new CodeVS(scaffoldKey: _scaffoldKey),
+              new ArrayVS(scaffoldKey: _scaffoldKey),
+            ],
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.fast_forward),
-            label: 'Quick Sort',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.arrow_upward),
-            label: 'Heap Sort',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bubble_chart),
-            label: 'Bubble Sort',
+        ), // Body()
+        bottomNavigationBar: BottomNavigationBar(
+          type: BottomNavigationBarType.shifting,
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.merge_type_outlined),
+              label: 'Merge',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.fast_forward),
+              label: 'Quick',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.arrow_upward),
+              label: 'Heap',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.bubble_chart),
+              label: 'Bubble',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.upgrade),
+              label: 'Insertion',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.check_circle),
+              label: 'Selection',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.group_work),
+              label: 'Gnome',
+            ),
+          ],
+          currentIndex: _selectedIndex,
+          selectedItemColor: kOrangeColor,
+          unselectedItemColor: kBlackColor,
+          onTap: isAlgorithmRunning == true ? null : onItemTapped,
+        ),
+
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+
+        floatingActionButton: FloatingActionButton.extended(
+            backgroundColor:
+                isAlgorithmRunning == true ? kRedColor : kTextLightColor,
+            hoverColor: kOrangeColor,
+            splashColor: kRedColor,
+            label: isAlgorithmRunning == true
+                ? Text("Sorting: " + timeC)
+                : Text("Sort: " + timeC),
+            icon: Icon(
+              isAlgorithmRunning == true
+                  ? Icons.stop
+                  : Icons.play_arrow_rounded,
+            ),
+            onPressed: isAlgorithmRunning == true
+                ? null
+                : () async {
+                    _stopWatchTimer.onExecute.add(StopWatchExecute.reset);
+                    _setAlgorithmRunningState(true);
+                    _stopWatchTimer.onExecute.add(StopWatchExecute.start);
+                    if (_selectedIndex == 0) {
+                      await _mergeSortVisualiser(arr, 0, arr.length - 1);
+                    } else if (_selectedIndex == 1) {
+                      await _quickSortVisualiser(arr, 0, arr.length - 1);
+                    } else if (_selectedIndex == 2) {
+                      await _heapSortVisualiser(arr);
+                    } else if (_selectedIndex == 3) {
+                      await _bubbleSortVisualiser(arr);
+                    } else if (_selectedIndex == 4) {
+                      await _insertionSortVisualiser(arr);
+                    } else if (_selectedIndex == 5) {
+                      await _selectionSortVisualiser(arr);
+                    } else if (_selectedIndex == 6) {
+                      await _gnomeSortVisualiser(arr);
+                    }
+                    _setAlgorithmRunningState(false);
+                    _stopWatchTimer.onExecute.add(StopWatchExecute.stop);
+                  }),
+      ),
+    );
+  }
+}
+
+class CodeVS extends StatefulWidget {
+  final GlobalKey<ScaffoldState> scaffoldKey;
+  const CodeVS({Key key, this.scaffoldKey}) : super(key: key);
+
+  @override
+  _CodeVSState createState() => _CodeVSState();
+}
+
+class _CodeVSState extends State<CodeVS> {
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Stack(
+        children: <Widget>[
+          Container(
+            padding: EdgeInsets.all(20),
+            child: Text(_selectedIndex == 0
+                ? mergeAlgo
+                : _selectedIndex == 1
+                    ? quickAlgo
+                    : _selectedIndex == 2
+                        ? heapAlgo
+                        : _selectedIndex == 3
+                            ? bubbleAlgo
+                            : _selectedIndex == 4
+                                ? insertionAlgo
+                                : _selectedIndex == 5
+                                    ? selectionAlgo
+                                    : _selectedIndex == 6
+                                        ? gnomeAlgo
+                                        : null),
           ),
         ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: kOrangeColor,
-        unselectedItemColor: kBlackColor,
-        onTap: isAlgorithmRunning == true ? null : onItemTapped,
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: FloatingActionButton.extended(
-          backgroundColor:
-              isAlgorithmRunning == true ? kRedColor : kTextLightColor,
-          hoverColor: kOrangeColor,
-          splashColor: kRedColor,
-          label: Text("Timer: " + timeC),
-          icon: Icon(
-            isAlgorithmRunning == true ? Icons.stop : Icons.play_arrow_rounded,
+    );
+  }
+}
+
+class ArrayVS extends StatefulWidget {
+  final GlobalKey<ScaffoldState> scaffoldKey;
+  const ArrayVS({Key key, this.scaffoldKey}) : super(key: key);
+
+  @override
+  _ArrayVSState createState() => _ArrayVSState();
+}
+
+class _ArrayVSState extends State<ArrayVS> {
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Stack(
+        children: <Widget>[
+          Container(
+            child: Column(
+              children: displayArr.map(
+                (e) {
+                  return SizedBox(
+                    width: double.infinity,
+                    height: 40.0,
+
+                    // height: double.infinity,
+                    child: Card(
+                      semanticContainer: true,
+                      margin: EdgeInsets.all(3),
+                      elevation: 5,
+                      color: isAlgorithmRunning == true
+                          ? kRedLightColor
+                          : kOrangeColor,
+                      child: Center(
+                        child: Text(
+                          e.toString(),
+                          style: TextStyle(
+                            color: kTextLightColor,
+                            fontSize: 22.0,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ).toList(),
+            ),
           ),
-          onPressed: isAlgorithmRunning == true
-              ? null
-              : () async {
-                  _stopWatchTimer.onExecute.add(StopWatchExecute.reset);
-                  _setAlgorithmRunningState(true);
-                  _stopWatchTimer.onExecute.add(StopWatchExecute.start);
-                  if (_selectedIndex == 0) {
-                    await _mergeSortVisualiser(arr, 0, arr.length - 1);
-                  } else if (_selectedIndex == 1) {
-                    await _quickSortVisualiser(arr, 0, arr.length - 1);
-                  } else if (_selectedIndex == 2) {
-                    await _heapSortVisualiser(arr);
-                  } else if (_selectedIndex == 3) {
-                    await _bubbleSortVisualiser(arr);
-                  }
-                  _setAlgorithmRunningState(false);
-                  _stopWatchTimer.onExecute.add(StopWatchExecute.stop);
-                }),
+        ],
+      ),
+    );
+  }
+}
+
+class VisualSorting extends StatefulWidget {
+  final GlobalKey<ScaffoldState> scaffoldKey;
+  const VisualSorting({Key key, this.scaffoldKey}) : super(key: key);
+
+  @override
+  _VisualSortingState createState() => _VisualSortingState();
+}
+
+class _VisualSortingState extends State<VisualSorting> {
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.topCenter,
+      child: CustomPaint(
+        willChange: true,
+        isComplex: true,
+        size: Size(window.physicalSize.width, double.negativeInfinity),
+        painter: SortingCanvas(arr),
+      ),
     );
   }
 }
@@ -271,9 +532,28 @@ AppBar buildAppBar(BuildContext context) {
     backgroundColor: kOrangeColor,
     elevation: 0,
     title: Text(
-      "Visual Sorter",
-      style: TextStyle(
-          fontSize: 20, fontWeight: FontWeight.bold, color: kTextLightColor),
+      "VSorter",
+      style: TextStyle(fontWeight: FontWeight.bold, color: kTextLightColor),
+    ),
+    bottom: TabBar(
+      labelColor: kTextLightColor,
+      tabs: <Widget>[
+        Tab(
+            icon: Icon(
+              Icons.leaderboard,
+            ),
+            text: "Visual"),
+        Tab(
+            icon: Icon(
+              Icons.developer_mode,
+            ),
+            text: "Code"),
+        Tab(
+            icon: Icon(
+              Icons.money,
+            ),
+            text: "Array"),
+      ],
     ),
     actions: <Widget>[
       AbsorbPointer(
@@ -310,13 +590,14 @@ class _MyStatefulSliderState extends State<MyStatefulSlider> {
   Widget build(BuildContext context) {
     return RaisedButton.icon(
       icon: Icon(Icons.settings_backup_restore_sharp, color: kTextLightColor),
-      label: Text("Random Array", style: TextStyle(color: kTextLightColor)),
+      label: Text("Random", style: TextStyle(color: kTextLightColor)),
       color: kOrangeColor,
       onPressed: isAlgorithmRunning == true
           ? null
           : () {
               _reset();
               arr = _getRandomIntegerList(initArraySize);
+              displayArr = arr;
             },
     );
   }
@@ -338,33 +619,10 @@ List<int> _getRandomIntegerList(size) {
   Random rng = new Random();
 
   size = widthUni.toInt() / 7;
-
   for (int i = 0; i < size; i++) {
     arr.add(rng.nextInt(ranLength) + 2);
   }
   return arr;
-}
-
-class Body extends StatefulWidget {
-  @override
-  _BodyState createState() => _BodyState();
-}
-
-class _BodyState extends State<Body> {
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Align(
-        alignment: Alignment.topCenter,
-        child: CustomPaint(
-          willChange: true,
-          isComplex: true,
-          size: Size(window.physicalSize.width, double.negativeInfinity),
-          painter: SortingCanvas(arr),
-        ),
-      ),
-    );
-  }
 }
 
 class SortingCanvas extends CustomPainter {
@@ -373,15 +631,14 @@ class SortingCanvas extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) async {
-    var linePaint = Paint()
-      ..color = color
-      ..strokeWidth = initSrokeWidth
-      ..isAntiAlias = true;
-
     //IMP the first offset is the bottom point and the second is the top point of the vertical line.
     //It is offset from the top left corner of the canvas
 
     for (int i = 1; i <= arr.length; i++) {
+      var linePaint = Paint()
+        ..color = _randomColor.randomColor(colorHue: ColorHue.orange)
+        ..strokeWidth = initSrokeWidth
+        ..isAntiAlias = true;
       canvas.drawLine(
           Offset(offsetBig + (offsetSmall * i), size.height - 20),
           Offset(offsetBig + (offsetSmall * i), offsetBig * arr[i - 1]),
@@ -390,8 +647,8 @@ class SortingCanvas extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(SortingCanvas oldDelegate) => true;
-  // !listEquals(this.arr, oldDelegate.arr);
+  bool shouldRepaint(SortingCanvas oldDelegate) =>
+      !listEquals(this.arr, oldDelegate.arr);
 }
 
 void rebuildAllChildren(BuildContext context) {
