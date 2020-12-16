@@ -201,6 +201,67 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     }
 
+    //function to sort the list using SELECTION SORT and repaint the canvas at every iteration.
+    _selectionSortVisualiser(arr) async {
+      print('Selection sort visualiser called');
+      List<int> selectArr = List.from(arr);
+      int minIndex, temp;
+
+      for (int i = 0; i < selectArr.length - 1; i++) {
+        minIndex = i;
+        for (int j = i + 1; j < selectArr.length; j++) {
+          if (selectArr[j] < selectArr[minIndex]) {
+            minIndex = j;
+          }
+        }
+
+        temp = selectArr[i];
+        selectArr[i] = selectArr[minIndex];
+        selectArr[minIndex] = temp;
+
+        await _updateArrayWithDelay(selectArr);
+      }
+    }
+
+    //function to sort the list using INSERTION SORT and repaint the canvas at every iteration.
+    _insertionSortVisualiser(arr) async {
+      print('Insertion sort visualiser called');
+      List<int> insertArr = List.from(arr);
+      int key, j;
+
+      for (int i = 1; i < insertArr.length; i++) {
+        key = insertArr[i];
+        j = i - 1;
+
+        while (j >= 0 && insertArr[j] > key) {
+          insertArr[j + 1] = insertArr[j];
+          j = j - 1;
+        }
+        insertArr[j + 1] = key;
+        await _updateArrayWithDelay(insertArr);
+      }
+    }
+
+    ////function to sort the list using GNOME SORT and repaint the canvas at every iteration.
+    _gnomeSortVisualiser(arr) async {
+      List<int> gnomeArr = List.from(arr);
+      int index = 0;
+
+      while (index < gnomeArr.length) {
+        if (index == 0) index++;
+        if (gnomeArr[index] >= gnomeArr[index - 1])
+          index++;
+        else {
+          int temp;
+          temp = gnomeArr[index];
+          gnomeArr[index] = gnomeArr[index - 1];
+          gnomeArr[index - 1] = temp;
+          await _updateArrayWithDelay(gnomeArr);
+          index--;
+        }
+      }
+    }
+
     final _stopWatchTimer = StopWatchTimer(
       onChange: (value) {
         final displayTime = StopWatchTimer.getDisplayTime(value);
@@ -228,19 +289,31 @@ class _HomeScreenState extends State<HomeScreen> {
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
               icon: Icon(Icons.merge_type_outlined),
-              label: 'Merge Sort',
+              label: 'Merge',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.fast_forward),
-              label: 'Quick Sort',
+              label: 'Quick',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.arrow_upward),
-              label: 'Heap Sort',
+              label: 'Heap',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.bubble_chart),
-              label: 'Bubble Sort',
+              label: 'Bubble',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.upgrade),
+              label: 'Insertion',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.check_circle),
+              label: 'Selection',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.group_work),
+              label: 'Gnome',
             ),
           ],
           currentIndex: _selectedIndex,
@@ -248,13 +321,15 @@ class _HomeScreenState extends State<HomeScreen> {
           unselectedItemColor: kBlackColor,
           onTap: isAlgorithmRunning == true ? null : onItemTapped,
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         floatingActionButton: FloatingActionButton.extended(
             backgroundColor:
                 isAlgorithmRunning == true ? kRedColor : kTextLightColor,
             hoverColor: kOrangeColor,
             splashColor: kRedColor,
-            label: Text("Timer: " + timeC),
+            label: isAlgorithmRunning == true
+                ? Text("Sorting: " + timeC)
+                : Text("Sort: " + timeC),
             icon: Icon(
               isAlgorithmRunning == true
                   ? Icons.stop
@@ -274,6 +349,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       await _heapSortVisualiser(arr);
                     } else if (_selectedIndex == 3) {
                       await _bubbleSortVisualiser(arr);
+                    } else if (_selectedIndex == 4) {
+                      await _selectionSortVisualiser(arr);
+                    } else if (_selectedIndex == 5) {
+                      await _insertionSortVisualiser(arr);
+                    } else if (_selectedIndex == 6) {
+                      await _gnomeSortVisualiser(arr);
                     }
                     _setAlgorithmRunningState(false);
                     _stopWatchTimer.onExecute.add(StopWatchExecute.stop);
@@ -307,7 +388,13 @@ class _CodeVSState extends State<CodeVS> {
                         ? heapAlgo
                         : _selectedIndex == 3
                             ? bubbleAlgo
-                            : null),
+                            : _selectedIndex == 4
+                                ? selectionAlgo
+                                : _selectedIndex == 5
+                                    ? insertionAlgo
+                                    : _selectedIndex == 6
+                                        ? gnomeAlgo
+                                        : null),
           ),
         ],
       ),

@@ -152,3 +152,53 @@ def bubbleSort(arr):
             if arr[j] > arr[j+1] : 
                 arr[j], arr[j+1] = arr[j+1], arr[j] 
 ''';
+
+String selectionAlgo = '''
+def selectionSort(array, size):
+   
+    for step in range(size):
+        min_idx = step
+
+        for i in range(step + 1, size):
+         
+            # to sort in descending order, change > to < in this line
+            # select the minimum element in each loop
+            if array[i] < array[min_idx]:
+                min_idx = i
+         
+        # put min at the correct position
+        (array[step], array[min_idx]) = (array[min_idx], array[step])
+''';
+
+String insertionAlgo = '''
+def insertionSort(arr): 
+  
+    # Traverse through 1 to len(arr) 
+    for i in range(1, len(arr)): 
+  
+        key = arr[i] 
+  
+        # Move elements of arr[0..i-1], that are 
+        # greater than key, to one position ahead 
+        # of their current position 
+        j = i-1
+        while j >= 0 and key < arr[j] : 
+                arr[j + 1] = arr[j] 
+                j -= 1
+        arr[j + 1] = key 
+''';
+
+String gnomeAlgo = '''
+def gnomeSort( arr, n): 
+    index = 0
+    while index < n: 
+        if index == 0: 
+            index = index + 1
+        if arr[index] >= arr[index - 1]: 
+            index = index + 1
+        else: 
+            arr[index], arr[index-1] = arr[index-1], arr[index] 
+            index = index - 1
+  
+    return arr
+''';
