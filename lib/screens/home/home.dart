@@ -203,7 +203,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
     //function to sort the list using SELECTION SORT and repaint the canvas at every iteration.
     _selectionSortVisualiser(arr) async {
-      print('Selection sort visualiser called');
       List<int> selectArr = List.from(arr);
       int minIndex, temp;
 
@@ -225,7 +224,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
     //function to sort the list using INSERTION SORT and repaint the canvas at every iteration.
     _insertionSortVisualiser(arr) async {
-      print('Insertion sort visualiser called');
       List<int> insertArr = List.from(arr);
       int key, j;
 
@@ -285,7 +283,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ), // Body()
         bottomNavigationBar: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
+          type: BottomNavigationBarType.shifting,
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
               icon: Icon(Icons.merge_type_outlined),
@@ -321,7 +319,9 @@ class _HomeScreenState extends State<HomeScreen> {
           unselectedItemColor: kBlackColor,
           onTap: isAlgorithmRunning == true ? null : onItemTapped,
         ),
+
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+
         floatingActionButton: FloatingActionButton.extended(
             backgroundColor:
                 isAlgorithmRunning == true ? kRedColor : kTextLightColor,
@@ -350,9 +350,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     } else if (_selectedIndex == 3) {
                       await _bubbleSortVisualiser(arr);
                     } else if (_selectedIndex == 4) {
-                      await _selectionSortVisualiser(arr);
-                    } else if (_selectedIndex == 5) {
                       await _insertionSortVisualiser(arr);
+                    } else if (_selectedIndex == 5) {
+                      await _selectionSortVisualiser(arr);
                     } else if (_selectedIndex == 6) {
                       await _gnomeSortVisualiser(arr);
                     }
@@ -389,9 +389,9 @@ class _CodeVSState extends State<CodeVS> {
                         : _selectedIndex == 3
                             ? bubbleAlgo
                             : _selectedIndex == 4
-                                ? selectionAlgo
+                                ? insertionAlgo
                                 : _selectedIndex == 5
-                                    ? insertionAlgo
+                                    ? selectionAlgo
                                     : _selectedIndex == 6
                                         ? gnomeAlgo
                                         : null),
@@ -483,7 +483,7 @@ AppBar buildAppBar(BuildContext context) {
     backgroundColor: kOrangeColor,
     elevation: 0,
     title: Text(
-      "Visual Sorter",
+      "VSorter",
       style: TextStyle(fontWeight: FontWeight.bold, color: kTextLightColor),
     ),
     bottom: TabBar(
