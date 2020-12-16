@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
@@ -7,6 +8,7 @@ import 'package:visual_sorter/constants.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:visual_sorter/screens/privacy_policy/privacy_policy.dart';
 import 'package:random_color/random_color.dart';
+import 'package:rate_my_app/rate_my_app.dart';
 
 RandomColor _randomColor = RandomColor();
 var size = initArraySize;
@@ -25,6 +27,53 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  RateMyApp _rateMyApp = RateMyApp(
+    preferencesPrefix: 'rateMyApp_',
+    minDays: 1,
+    minLaunches: 2,
+    remindDays: 2,
+    remindLaunches: 5,
+    googlePlayIdentifier: 'com.xilo.visualsorter',
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    _rateMyApp.init().then((_) {
+      if (_rateMyApp.shouldOpenDialog) {
+        _rateMyApp.showRateDialog(
+          context,
+          title: 'Rate this app', // The dialog title.
+          message:
+              'If you like this app, please take a little bit of your time to review it !\nIt really helps us and it shouldn\'t take you more than one minute.', // The dialog message.
+          rateButton: '👍 RATE', // The dialog "rate" button text.
+          noButton: '🚫 NO THANKS', // The dialog "no" button text.
+          laterButton: '🖐️ MAYBE LATER', // The dialog "later" button text.
+          listener: (button) {
+            // The button click listener (useful if you want to cancel the click event).
+            switch (button) {
+              case RateMyAppDialogButton.rate:
+                break;
+              case RateMyAppDialogButton.later:
+                break;
+              case RateMyAppDialogButton.no:
+                break;
+            }
+
+            return true; // Return false if you want to cancel the click event.
+          },
+          ignoreNativeDialog: Platform
+              .isAndroid, // Set to false if you want to show the Apple's native app rating dialog on iOS or Google's native app rating dialog (depends on the current Platform).
+          dialogStyle: DialogStyle(), // Custom dialog styles.
+          onDismissed: () => _rateMyApp.callEvent(RateMyAppEventType
+              .laterButtonPressed), // Called when the user dismissed the dialog (either by taping outside or by pressing the "back" button).
+          // contentBuilder: (context, defaultContent) => content, // This one allows you to change the default dialog content.
+          // actionsBuilder: (context) => [], // This one allows you to use your own buttons.
+        );
+      }
+    });
+  }
+
   var _scaffoldKey = new GlobalKey<ScaffoldState>();
   void onItemTapped(int index) {
     setState(() {
@@ -548,6 +597,7 @@ class _MyStatefulSliderState extends State<MyStatefulSlider> {
           : () {
               _reset();
               arr = _getRandomIntegerList(initArraySize);
+              displayArr = arr;
             },
     );
   }
