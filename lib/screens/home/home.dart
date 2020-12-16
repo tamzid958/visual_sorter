@@ -6,16 +6,18 @@ import 'package:flutter/material.dart';
 import 'package:visual_sorter/constants.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:visual_sorter/screens/privacy_policy/privacy_policy.dart';
+import 'package:random_color/random_color.dart';
 
+RandomColor _randomColor = RandomColor();
 var size = initArraySize;
 List<int> arr = _getRandomIntegerList(size);
-Color color = kOrangeColor;
 bool isAlgorithmRunning = false;
 int _selectedIndex = 0;
 int index = 0;
 double hieghtUni, widthUni;
 String timeC = "00.00.00.00";
 var arrays = "";
+List<int> displayArr = arr;
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -36,12 +38,10 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
 //async update method to keep the body of recursive algorithms cleaner.
     _updateArrayWithDelay(List<int> updatedArr) async {
-      color = kGreenColor;
       await Future.delayed(const Duration(milliseconds: time), () {
         setState(() {
+          displayArr = updatedArr;
           arr = List.from(updatedArr);
-          color = kRedColor;
-          color = kVioletColor;
         });
       });
     }
@@ -207,8 +207,9 @@ class _HomeScreenState extends State<HomeScreen> {
         timeC = displayTime;
       },
     );
+
     return DefaultTabController(
-      length: 2,
+      length: 3,
       initialIndex: 0,
       child: Scaffold(
         key: _scaffoldKey,
@@ -217,6 +218,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: TabBarView(
             children: [
               new VisualSorting(scaffoldKey: _scaffoldKey),
+              new CodeVS(scaffoldKey: _scaffoldKey),
               new ArrayVS(scaffoldKey: _scaffoldKey),
             ],
           ),
@@ -281,6 +283,38 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
+class CodeVS extends StatefulWidget {
+  final GlobalKey<ScaffoldState> scaffoldKey;
+  const CodeVS({Key key, this.scaffoldKey}) : super(key: key);
+
+  @override
+  _CodeVSState createState() => _CodeVSState();
+}
+
+class _CodeVSState extends State<CodeVS> {
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Stack(
+        children: <Widget>[
+          Container(
+            padding: EdgeInsets.all(20),
+            child: Text(_selectedIndex == 0
+                ? mergeAlgo
+                : _selectedIndex == 1
+                    ? quickAlgo
+                    : _selectedIndex == 2
+                        ? heapAlgo
+                        : _selectedIndex == 3
+                            ? bubbleAlgo
+                            : null),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class ArrayVS extends StatefulWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
   const ArrayVS({Key key, this.scaffoldKey}) : super(key: key);
@@ -292,7 +326,43 @@ class ArrayVS extends StatefulWidget {
 class _ArrayVSState extends State<ArrayVS> {
   @override
   Widget build(BuildContext context) {
-    return Container(child: Text("Random"));
+    return SingleChildScrollView(
+      child: Stack(
+        children: <Widget>[
+          Container(
+            child: Column(
+              children: displayArr.map(
+                (e) {
+                  return SizedBox(
+                    width: double.infinity,
+                    height: 40.0,
+
+                    // height: double.infinity,
+                    child: Card(
+                      semanticContainer: true,
+                      margin: EdgeInsets.all(3),
+                      elevation: 5,
+                      color: isAlgorithmRunning == true
+                          ? kRedLightColor
+                          : kOrangeColor,
+                      child: Center(
+                        child: Text(
+                          e.toString(),
+                          style: TextStyle(
+                            color: kTextLightColor,
+                            fontSize: 22.0,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ).toList(),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -337,6 +407,11 @@ AppBar buildAppBar(BuildContext context) {
               Icons.leaderboard,
             ),
             text: "Visual"),
+        Tab(
+            icon: Icon(
+              Icons.developer_mode,
+            ),
+            text: "Code"),
         Tab(
             icon: Icon(
               Icons.money,
@@ -419,15 +494,14 @@ class SortingCanvas extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) async {
-    var linePaint = Paint()
-      ..color = color
-      ..strokeWidth = initSrokeWidth
-      ..isAntiAlias = true;
-
     //IMP the first offset is the bottom point and the second is the top point of the vertical line.
     //It is offset from the top left corner of the canvas
 
     for (int i = 1; i <= arr.length; i++) {
+      var linePaint = Paint()
+        ..color = _randomColor.randomColor(colorHue: ColorHue.orange)
+        ..strokeWidth = initSrokeWidth
+        ..isAntiAlias = true;
       canvas.drawLine(
           Offset(offsetBig + (offsetSmall * i), size.height - 20),
           Offset(offsetBig + (offsetSmall * i), offsetBig * arr[i - 1]),

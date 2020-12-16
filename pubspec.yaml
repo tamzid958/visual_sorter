@@ -32,6 +32,8 @@ dependencies:
   stop_watch_timer: ^0.6.0+1
   flutter_markdown: ^0.5.1
   rate_my_app: ^0.7.2
+  random_color: ^1.0.5
+  snack: ^1.0.5
 
 dev_dependencies:
   flutter_test:
