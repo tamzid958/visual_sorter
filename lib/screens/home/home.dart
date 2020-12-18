@@ -14,7 +14,7 @@ List<int> arr = _getRandomIntegerList(size);
 bool isAlgorithmRunning = false;
 int _selectedIndex = 0;
 int index = 0;
-double hieghtUni, widthUni;
+double heightUni, widthUni;
 var arrays = "";
 List<int> displayArr = arr;
 bool _isPaused = false;
@@ -589,7 +589,7 @@ class _VisualSortingState extends State<VisualSorting> {
 bool isSwitched = false;
 AppBar buildAppBar(BuildContext context) {
   widthUni = MediaQuery.of(context).size.width / 2;
-  hieghtUni = MediaQuery.of(context).size.height / 2;
+  heightUni = MediaQuery.of(context).size.height / 2;
 
   return AppBar(
     elevation: 0,
