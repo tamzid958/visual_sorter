@@ -254,13 +254,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.7.2"
-  rxdart:
-    dependency: transitive
-    description:
-      name: rxdart
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.24.1"
   shared_preferences:
     dependency: transitive
     description:
@@ -329,13 +322,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.10.0-nullsafety.6"
-  stop_watch_timer:
-    dependency: "direct main"
-    description:
-      name: stop_watch_timer
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.6.0+1"
   stream_channel:
     dependency: transitive
     description:

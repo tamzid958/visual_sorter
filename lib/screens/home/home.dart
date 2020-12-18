@@ -6,7 +6,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:visual_sorter/constants.dart';
-import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:visual_sorter/screens/privacy_policy/privacy_policy.dart';
 import 'package:rate_my_app/rate_my_app.dart';
 
@@ -16,11 +15,9 @@ bool isAlgorithmRunning = false;
 int _selectedIndex = 0;
 int index = 0;
 double hieghtUni, widthUni;
-String timeC = "00.00.00.00";
 var arrays = "";
 List<int> displayArr = arr;
 bool _isPaused = false;
-var _stopWatchTimer;
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -313,13 +310,6 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     }
 
-    _stopWatchTimer = StopWatchTimer(
-      onChange: (value) async {
-        final displayTime = StopWatchTimer.getDisplayTime(value);
-        timeC = displayTime;
-      },
-    );
-
     return DefaultTabController(
       length: 3,
       initialIndex: 0,
@@ -381,11 +371,27 @@ class _HomeScreenState extends State<HomeScreen> {
             splashColor: kRedColor,
             label: isAlgorithmRunning == true
                 ? Text(
-                    "Sorting: " + timeC,
+                    (_selectedIndex == 0
+                            ? "O(nlog(n))"
+                            : _selectedIndex == 1
+                                ? "O(n^2)"
+                                : _selectedIndex == 2
+                                    ? "O(nlog(n))"
+                                    : _selectedIndex == 3
+                                        ? "O(n^2)"
+                                        : _selectedIndex == 4
+                                            ? "O(n^2)"
+                                            : _selectedIndex == 5
+                                                ? "O(n^2)"
+                                                : _selectedIndex == 6
+                                                    ? "O(n^2)"
+                                                    : null) +
+                        "=> n: " +
+                        List.from(arr).length.toString(),
                     style: TextStyle(color: kTextLightColor),
                   )
                 : Text(
-                    "Sort: " + timeC,
+                    "Sort",
                     style: TextStyle(color: kTextColor),
                   ),
             icon: Icon(
@@ -402,9 +408,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     if (listEquals(arr, sorted)) {
                       return;
                     }
-                    _stopWatchTimer.onExecute.add(StopWatchExecute.reset);
                     _setAlgorithmRunningState(true);
-                    _stopWatchTimer.onExecute.add(StopWatchExecute.start);
+
                     if (_selectedIndex == 0) {
                       await _mergeSortVisualiser(arr, 0, arr.length - 1);
                     } else if (_selectedIndex == 1) {
@@ -421,7 +426,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       await _gnomeSortVisualiser(arr);
                     }
                     _setAlgorithmRunningState(false);
-                    _stopWatchTimer.onExecute.add(StopWatchExecute.stop);
                   }),
       ),
     );
