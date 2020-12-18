@@ -18,6 +18,7 @@ double heightUni, widthUni;
 var arrays = "";
 List<int> displayArr = arr;
 bool _isPaused = false;
+bool isSwitched = false;
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -359,7 +360,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
           currentIndex: _selectedIndex,
-          selectedItemColor: Colors.lightBlue,
+          fixedColor: Theme.of(context).accentColor,
           unselectedItemColor: kAshColor,
           onTap: isAlgorithmRunning == true ? null : onItemTapped,
         ),
@@ -586,11 +587,9 @@ class _VisualSortingState extends State<VisualSorting> {
   }
 }
 
-bool isSwitched = false;
 AppBar buildAppBar(BuildContext context) {
   widthUni = MediaQuery.of(context).size.width / 2;
   heightUni = MediaQuery.of(context).size.height / 2;
-
   return AppBar(
     elevation: 0,
     iconTheme: IconThemeData(color: kTextLightColor),
