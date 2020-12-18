@@ -21,7 +21,6 @@ var arrays = "";
 List<int> displayArr = arr;
 bool _isPaused = false;
 var _stopWatchTimer;
-var accColor;
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -376,7 +375,6 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
 
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-
         floatingActionButton: FloatingActionButton.extended(
             backgroundColor:
                 isAlgorithmRunning == true ? kRedColor : kTextLightColor,
@@ -452,7 +450,7 @@ class MyDrawer extends StatelessWidget {
                 image: AssetImage('icons/Games.png'),
                 fit: BoxFit.fill,
                 colorFilter: ColorFilter.mode(
-                    Colors.black.withOpacity(0.2), BlendMode.dstATop),
+                    Colors.black.withOpacity(0.8), BlendMode.colorBurn),
               ),
             ),
           ),
@@ -586,10 +584,9 @@ class _VisualSortingState extends State<VisualSorting> {
 
 bool isSwitched = false;
 AppBar buildAppBar(BuildContext context) {
-  accColor = Theme.of(context).accentColor;
-
   widthUni = MediaQuery.of(context).size.width / 2;
   hieghtUni = MediaQuery.of(context).size.height / 2;
+
   return AppBar(
     elevation: 0,
     iconTheme: IconThemeData(color: kTextLightColor),
