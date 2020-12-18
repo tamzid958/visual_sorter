@@ -451,7 +451,7 @@ class MyDrawer extends StatelessWidget {
             decoration: BoxDecoration(
               color: kLightBlueColor,
               image: DecorationImage(
-                image: AssetImage('icons/Games.png'),
+                image: AssetImage('assets/icons/Games.png'),
                 fit: BoxFit.fill,
                 colorFilter: ColorFilter.mode(
                     Colors.black.withOpacity(0.8), BlendMode.colorBurn),
@@ -684,8 +684,8 @@ class _MySwitchState extends State<MySwitch> {
           isSwitched = value;
         });
       },
-      inactiveThumbImage: AssetImage("icons/morning.png"),
-      activeThumbImage: AssetImage("/icons/night.png"),
+      inactiveThumbImage: AssetImage("assets/icons/morning.png"),
+      activeThumbImage: AssetImage("assets/icons/night.png"),
       activeTrackColor: kWhiteColor,
       activeColor: kAshColor,
     );
@@ -705,6 +705,7 @@ class _MyStatefulSliderState extends State<MyStatefulSlider> {
     return RaisedButton.icon(
       icon: Icon(Icons.settings_backup_restore_sharp, color: kTextLightColor),
       label: Text("Random", style: TextStyle(color: kTextLightColor)),
+      elevation: 0,
       color: Colors.transparent,
       onPressed: isAlgorithmRunning == true
           ? null
