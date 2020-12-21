@@ -5,9 +5,9 @@ import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:rate_my_app/rate_my_app.dart';
 import 'package:visual_sorter/constants.dart';
 import 'package:visual_sorter/screens/privacy_policy/privacy_policy.dart';
-import 'package:rate_my_app/rate_my_app.dart';
 
 var size = initArraySize;
 List<int> arr = _getRandomIntegerList(size);
@@ -34,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
     remindLaunches: 5,
     googlePlayIdentifier: 'com.xilo.visualsorter',
   );
-
+  bool shouldOpenDialog = false;
   @override
   void initState() {
     super.initState();
