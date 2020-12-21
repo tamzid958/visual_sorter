@@ -35,6 +35,12 @@ class _HomeScreenState extends State<HomeScreen> {
     googlePlayIdentifier: 'com.xilo.visualsorter',
   );
   bool shouldOpenDialog = false;
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -489,6 +495,11 @@ class CodeVS extends StatefulWidget {
 
 class _CodeVSState extends State<CodeVS> {
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Stack(
@@ -526,6 +537,11 @@ class ArrayVS extends StatefulWidget {
 }
 
 class _ArrayVSState extends State<ArrayVS> {
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -573,6 +589,11 @@ class VisualSorting extends StatefulWidget {
 }
 
 class _VisualSortingState extends State<VisualSorting> {
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Align(
@@ -640,6 +661,11 @@ class MyOpacity extends StatefulWidget {
 
 class _MyOpacityState extends State<MyOpacity> {
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Opacity(
       opacity: isAlgorithmRunning == true ? 1 : 0,
@@ -668,6 +694,11 @@ class MySwitch extends StatefulWidget {
 }
 
 class _MySwitchState extends State<MySwitch> {
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Switch(
@@ -699,6 +730,11 @@ class MyStatefulSlider extends StatefulWidget {
 
 /// This is the private State class that goes with MyStatefulWidget.
 class _MyStatefulSliderState extends State<MyStatefulSlider> {
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return RaisedButton.icon(
